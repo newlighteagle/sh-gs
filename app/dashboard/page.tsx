@@ -68,31 +68,43 @@ export default function Page() {
             </Breadcrumb>
           </div>
           <div className="ml-auto px-4 flex items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1.5">
-                  <Avatar className="h-7 w-7">
-                    <AvatarImage
-                      src={session?.user?.image ?? ""}
-                      alt={session?.user?.name ?? "User"}
-                    />
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
-                  {session?.user?.name ?? "User"}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                >
-                  <LogOut />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {mounted ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1.5">
+                    <Avatar className="h-7 w-7">
+                      <AvatarImage
+                        src={session?.user?.image ?? ""}
+                        alt={session?.user?.name ?? "User"}
+                      />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    {session?.user?.name ?? "User"}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                  >
+                    <LogOut />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1.5">
+                <Avatar className="h-7 w-7">
+                  <AvatarImage
+                    src={session?.user?.image ?? ""}
+                    alt={session?.user?.name ?? "User"}
+                  />
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+              </button>
+            )}
             <Button
               variant="outline"
               size="icon"
