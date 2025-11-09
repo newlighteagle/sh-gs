@@ -18,6 +18,7 @@ import { useSession } from "next-auth/react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
+import { navMain, filterMenuByPermissions } from "@/lib/menu"
 import {
   Sidebar,
   SidebarContent,
@@ -50,27 +51,7 @@ const data = {
       plan: "Free",
     },
   ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: PieChart,
-      isActive: true,
-      items: [
-        { title: "Main", url: "/dashboard" },
-        { title: "KPI", url: "/dashboard/kpi" },
-      ],
-    },
-    {
-      title: "Master Data",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        { title: "District", url: "/master/district" },
-        { title: "ICS", url: "/master/ics" },
-      ],
-    },
-  ],
+  navMain: [],
   projects: [
     {
       name: "Design Engineering",
@@ -97,6 +78,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     email: session?.user?.email ?? data.user.email,
     avatar: session?.user?.image ?? data.user.avatar,
   }
+  const userPerms = Array.isArray((session as any)?.user?.permissions)
+    ? ((session as any).user.permissions as string[])
+    : ["*"]
+  const items = filterMenuByPermissions(navMain, userPerms)
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -107,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={authUser} />

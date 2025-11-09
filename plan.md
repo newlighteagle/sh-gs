@@ -1,5 +1,44 @@
 # Rencana Proyek — MIS GS v2
 
+## Rencana Terstruktur
+
+### Sudah dikerjakan
+- NextAuth Google OAuth: API route App Router, halaman login, redirect `/` → `/login`, redirect pasca-login ke `/dashboard`.
+- Dashboard + sidebar shadcn/ui (sidebar-07), avatar Google di header & sidebar, tombol toggle tema (light/dark).
+- Sidebar menu: Dashboard {Main, KPI}, Master Data {District, ICS}, Report {Monthly → MT, Weekly → Kampar/Rokan Hulu/Siak/Pelalawan}.
+- Perbaikan hydration mismatch: Collapsible pakai `defaultOpen`, render nav & dropdown setelah mount, Tooltip hanya saat sidebar collapsed (non-mobile).
+- Integrasi Google Sheets (service account), env var kompatibel, pembacaan sheet District & ICS, mapping field ICS (termasuk Registered Farmer), urutan kolom sesuai sheet, sembunyikan kolom tertentu.
+- DataTable generik: pagination, multi-filter (District/ICS/isKPI), column visibility, badge untuk isKPI.
+- Halaman master: `/master/district` dan `/master/ics` (server fetch + client table).
+- Sentralisasi menu: `lib/menu.ts` (+ `filterMenuByPermissions`), model modul/izin: `lib/module.ts`, model user/role/permission: `lib/user.ts`; `AppSidebar` memfilter menu berdasarkan `session.user.permissions` (fallback `*`).
+
+### Akan dikerjakan (Short term)
+- NextAuth callbacks: isi `session.user.permissions` berdasarkan roles + overrides (dari sheet Security).
+- Integrasi sheet Security (`email`) untuk allowlist, roles, module permissions.
+- Middleware/guard rute: gunakan `routeToModule` + `matchPermission` untuk proteksi halaman.
+- Buat halaman placeholder untuk Report: `/report/monthly/mt` dan weekly (Kampar, Rokan Hulu, Siak, Pelalawan).
+- Loading & error states terpadu untuk tabel; selaraskan fitur filter District seperti ICS.
+- Verifikasi lintas halaman: tidak ada hydration warning di `/dashboard`, `/master/*`, `/report/*`.
+
+### Akan dikerjakan (Mid term)
+- Tambah Master Data lain: Farmer, Parcel, Training, BMP, NKT, K3 (server fetch + table + filter).
+- Dashboard KPI: definisi metrik, agregasi, dan visualisasi; finalisasi pilihan chart library.
+- Caching & ISR terukur per halaman data; opsi revalidate on demand.
+- Komponen `AccessDenied` dan alur redirect ketika tidak punya izin.
+
+### Akan dikerjakan (Long term)
+- UI manajemen role/permission; audit log akses; konfigurasi modul per organisasi.
+- Optimasi performa: streaming, memoization, pengurangan bundle, image optimization.
+- CI/CD + pengujian (unit, e2e) minimal untuk auth, guard, dan table.
+
+### Nice to have
+- Export CSV/XLSX dari tabel.
+- Saved filters & advanced filters (rentang tanggal, District/ICS, dsb.).
+- Breadcrumb & pencarian terintegrasi, halaman profil user.
+- Lokalisasi/i18n dan preferensi tema tersinkron cookie.
+
+---
+
 ## Ringkasan
 - Framework: Next.js + TypeScript (App Router), deploy di Vercel.
 - UI: Tailwind CSS + shadcn/ui (pattern sidebar-07).
