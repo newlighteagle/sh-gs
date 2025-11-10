@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-1">
           <Leaf className="h-5 w-5" />
-          <span className="font-semibold">Smallholder Hub</span>
+          <span className="font-semibold group-data-[collapsible=icon]:hidden">Smallholder Hub</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
