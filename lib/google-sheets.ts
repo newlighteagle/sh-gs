@@ -4,10 +4,50 @@ import { google } from "googleapis"
 import { ICS_COLUMNS } from "./ics"
 export type { ICS } from "./ics"
 import { SPREADSHEETS } from "./spreadsheet"
+import type { MT } from "./mt"
 
 export type District = {
   DistrictCode: string
   DistrictName: string
+}
+
+export async function getMT(): Promise<MT[]> {
+  const spreadsheetId = SPREADSHEETS.report.id
+  const auth = getAuth()
+  const sheetsApi = google.sheets({ version: "v4", auth })
+  const rangeSheet = SPREADSHEETS.report.sheet.MT.name
+
+  const res = await sheetsApi.spreadsheets.values.get({
+    spreadsheetId,
+    range: rangeSheet,
+  })
+
+  const rows = res.data.values || []
+  if (!rows.length) return []
+  const [headers, ...data] = rows
+
+  // Build a case-insensitive header index
+  const headerIndex = new Map<string, number>()
+  headers.forEach((h, i) => headerIndex.set(String(h).trim().toLowerCase(), i))
+  const getIdx = (name: string) => headerIndex.get(name) ?? -1
+
+  const idxOutcome = getIdx("outcome")
+  const idxOutput = getIdx("output")
+  const idxAct = getIdx("act")
+  const idxStatus = getIdx("status")
+  const idxProgress = getIdx("progress")
+  const idxComment = getIdx("comment")
+
+  return data
+    .filter((r) => r.length)
+    .map((r) => ({
+      outcome: String((idxOutcome >= 0 ? r[idxOutcome] : "") || ""),
+      output: String((idxOutput >= 0 ? r[idxOutput] : "") || ""),
+      act: String((idxAct >= 0 ? r[idxAct] : "") || ""),
+      status: String((idxStatus >= 0 ? r[idxStatus] : "") || ""),
+      progress: String((idxProgress >= 0 ? r[idxProgress] : "") || ""),
+      comment: String((idxComment >= 0 ? r[idxComment] : "") || ""),
+    }))
 }
 
 // ICS type is re-exported from lib/ics
