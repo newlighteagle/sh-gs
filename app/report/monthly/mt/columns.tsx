@@ -21,6 +21,11 @@ export const columns: ColumnDef<MTDisplay>[] = [
     cell: ({ row }) => (row.original.showOutput ? <span>{row.original.output}</span> : <span />),
   },
   {
+    accessorKey: "act_code",
+    header: "Act Code",
+    cell: ({ row }) => <span>{row.original.act_code}</span>,
+  },
+  {
     accessorKey: "act",
     header: "Act",
     cell: ({ row }) => <span>{row.original.act}</span>,
@@ -36,8 +41,14 @@ export const columns: ColumnDef<MTDisplay>[] = [
     },
     filterFn: (row, id, value) => {
       if (!value) return true
+      const rowVal = String(row.getValue(id) ?? "").trim().toLowerCase()
+      if (Array.isArray(value)) {
+        if (value.length === 0) return true
+        const set = new Set(value.map((v: string) => String(v).trim().toLowerCase()))
+        return set.has(rowVal)
+      }
       if (value === "all") return true
-      return String(row.getValue(id) ?? "").trim().toLowerCase() === String(value).trim().toLowerCase()
+      return rowVal === String(value).trim().toLowerCase()
     },
   },
   {
@@ -48,7 +59,7 @@ export const columns: ColumnDef<MTDisplay>[] = [
       const num = Number.parseInt(raw.replace(/%/g, ""))
       const pct = Number.isFinite(num) ? Math.max(0, Math.min(100, num)) : 0
       return (
-        <div className="flex w-40 items-center gap-2">
+        <div className="flex w-full items-center gap-2">
           <div className="relative h-2 w-full rounded bg-muted">
             <div className="absolute left-0 top-0 h-2 rounded bg-foreground" style={{ width: `${pct}%` }} />
           </div>

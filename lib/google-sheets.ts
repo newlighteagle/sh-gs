@@ -33,6 +33,7 @@ export async function getMT(): Promise<MT[]> {
 
   const idxOutcome = getIdx("outcome")
   const idxOutput = getIdx("output")
+  const idxActCode = getIdx("act_code")
   const idxAct = getIdx("act")
   const idxStatus = getIdx("status")
   const idxProgress = getIdx("progress")
@@ -43,6 +44,7 @@ export async function getMT(): Promise<MT[]> {
     .map((r) => ({
       outcome: String((idxOutcome >= 0 ? r[idxOutcome] : "") || ""),
       output: String((idxOutput >= 0 ? r[idxOutput] : "") || ""),
+      act_code: String((idxActCode >= 0 ? r[idxActCode] : "") || ""),
       act: String((idxAct >= 0 ? r[idxAct] : "") || ""),
       status: String((idxStatus >= 0 ? r[idxStatus] : "") || ""),
       progress: String((idxProgress >= 0 ? r[idxProgress] : "") || ""),

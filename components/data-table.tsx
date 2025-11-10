@@ -11,6 +11,7 @@ import {
   type VisibilityState,
   type ColumnSizingState,
   type Cell,
+  type Table as RTTable,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -45,14 +46,17 @@ interface DataTableProps<TData, TValue> {
     columnId: string
     label?: string
     options: { label: string; value: string }[]
+    multi?: boolean
   }[]
   enableColumnResize?: boolean
   columnResizeMode?: "onChange" | "onEnd"
   getCellProps?: (cell: Cell<TData, any>) => React.TdHTMLAttributes<HTMLTableCellElement> | undefined
   enablePagination?: boolean
+  initialColumnSizing?: ColumnSizingState
+  renderCustomFilters?: (table: RTTable<TData>) => React.ReactNode
 }
 
-export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys, searchPlaceholder = "Search...", searchPlaceholders, enableColumnVisibility, defaultHiddenColumnIds, selectFilters, enableColumnResize = false, columnResizeMode = "onChange", getCellProps, enablePagination = true }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys, searchPlaceholder = "Search...", searchPlaceholders, enableColumnVisibility, defaultHiddenColumnIds, selectFilters, enableColumnResize = false, columnResizeMode = "onChange", getCellProps, enablePagination = true, initialColumnSizing, renderCustomFilters }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: enablePagination ? 10 : data.length })
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(() => {
@@ -62,7 +66,7 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
     })
     return initial
   })
-  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>({})
+  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>(initialColumnSizing || {})
   const [columnSizingInfo, setColumnSizingInfo] = React.useState({})
   const table = useReactTable({
     data,
@@ -89,7 +93,7 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
 
   return (
     <div className="w-full">
-      {(searchKey || searchKeys?.length || selectFilters?.length || enableColumnVisibility) && (
+      {(searchKey || searchKeys?.length || selectFilters?.length || enableColumnVisibility || renderCustomFilters) && (
         <div className="flex flex-wrap items-center gap-2 py-2">
           {((searchKeys && searchKeys.length ? searchKeys : (searchKey ? [searchKey] : []))).map((key) => (
             <Input
@@ -101,14 +105,38 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
             />
           ))}
           {selectFilters?.map((sf) => {
-            const value = (table.getColumn(sf.columnId)?.getFilterValue() as string) ?? ""
+            const col = table.getColumn(sf.columnId)
+            if (sf.multi) {
+              const value = (col?.getFilterValue() as string[]) ?? []
+              return (
+                <label key={sf.columnId} className="inline-flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">{sf.label ?? sf.columnId}</span>
+                  <select
+                    multiple
+                    className="min-h-9 rounded-md border bg-background px-2 py-1"
+                    value={value}
+                    onChange={(e) => {
+                      const selected = Array.from(e.currentTarget.selectedOptions).map((o) => o.value)
+                      col?.setFilterValue(selected)
+                    }}
+                  >
+                    {sf.options.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )
+            }
+            const value = (col?.getFilterValue() as string) ?? ""
             return (
               <label key={sf.columnId} className="inline-flex items-center gap-2 text-sm">
                 <span className="text-muted-foreground">{sf.label ?? sf.columnId}</span>
                 <select
                   className="h-9 rounded-md border bg-background px-2"
                   value={value}
-                  onChange={(e) => table.getColumn(sf.columnId)?.setFilterValue(e.target.value)}
+                  onChange={(e) => col?.setFilterValue(e.target.value)}
                 >
                   {sf.options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -141,6 +169,9 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+          {renderCustomFilters && (
+            <div className="flex items-center gap-2">{renderCustomFilters(table as any)}</div>
+          )}
         </div>
       )}
       <Table>
@@ -152,7 +183,7 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
                   <TableHead
                     key={header.id}
                     className={cn(enableColumnResize && "relative")}
-                    style={enableColumnResize ? { width: header.getSize() } : undefined}
+                    style={enableColumnResize && columnSizing[header.column.id as any] != null ? { width: header.getSize() } : undefined}
                   >
                     {header.isPlaceholder
                       ? null
@@ -180,7 +211,7 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    style={enableColumnResize ? { width: cell.column.getSize() } : undefined}
+                    style={enableColumnResize && columnSizing[cell.column.id as any] != null ? { width: cell.column.getSize() } : undefined}
                     {...(getCellProps ? getCellProps(cell as any) : undefined)}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
