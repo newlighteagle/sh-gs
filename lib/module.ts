@@ -8,6 +8,7 @@ export type ModuleKey =
   | "report.weekly.rokan-hulu"
   | "report.weekly.siak"
   | "report.weekly.pelalawan"
+  | "ics"
 
 export const ModulePaths: Record<ModuleKey, string> = {
   "dashboard.main": "/dashboard",
@@ -19,6 +20,7 @@ export const ModulePaths: Record<ModuleKey, string> = {
   "report.weekly.rokan-hulu": "/report/weekly/rokan-hulu",
   "report.weekly.siak": "/report/weekly/siak",
   "report.weekly.pelalawan": "/report/weekly/pelalawan",
+  "ics": "/ics",
 }
 
 export type ModulePermission = string

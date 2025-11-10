@@ -2,7 +2,8 @@
 
 import { DataTable } from "@/components/data-table"
 import { columns } from "./columns"
-import type { ICS } from "@/lib/google-sheets"
+import type { ICS } from "@/lib/ics"
+import { ICS_COLUMNS } from "@/lib/ics"
 
 export default function ICSTable({ data }: { data: ICS[] }) {
   return (
@@ -12,7 +13,7 @@ export default function ICSTable({ data }: { data: ICS[] }) {
       searchKeys={["DistrictName", "ICSName"]}
       searchPlaceholders={{ DistrictName: "Search District...", ICSName: "Search ICS..." }}
       enableColumnVisibility
-      defaultHiddenColumnIds={["DistrictCode", "ICSCode"]}
+      defaultHiddenColumnIds={ICS_COLUMNS.filter((c) => c.hidden).map((c) => c.key as string)}
       selectFilters={[
         {
           columnId: "isKPI",

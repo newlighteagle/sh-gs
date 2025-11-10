@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import * as React from "react"
 import { usePathname } from "next/navigation"
 
@@ -20,24 +20,9 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url?: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url?: string
-      items?: {
-        title: string
-        url: string
-      }[]
-    }[]
-  }[]
-}) {
+import type { MenuItem } from "@/lib/menu"
+
+export function NavMain({ items }: { items: MenuItem[] }) {
   const pathname = usePathname()
   const [mounted, setMounted] = React.useState(false)
   React.useEffect(() => setMounted(true), [])
@@ -54,7 +39,7 @@ export function NavMain({
         {items.map((item) => {
           const childMatches = !!item.items && item.items.some((sub) =>
             (sub.url && pathname.startsWith(sub.url)) ||
-            (!!sub.items && sub.items.some((ss) => pathname.startsWith(ss.url)))
+            (!!sub.items && sub.items.some((ss) => !!ss.url && pathname.startsWith(ss.url)))
           )
           const shouldBeOpen = !!item.isActive || childMatches
 
@@ -89,7 +74,7 @@ export function NavMain({
                         )
                       }
 
-                      const subShouldBeOpen = !!subItem.items?.some((ss) => pathname.startsWith(ss.url))
+                      const subShouldBeOpen = !!subItem.items?.some((ss) => !!ss.url && pathname.startsWith(ss.url))
                       return (
                         <Collapsible
                           key={`${subItem.title}-${subShouldBeOpen ? "open" : "closed"}`}
@@ -111,7 +96,7 @@ export function NavMain({
                                 {subItem.items?.map((ss) => (
                                   <SidebarMenuSubItem key={ss.title}>
                                     <SidebarMenuSubButton asChild>
-                                      <a href={ss.url}>
+                                      <a href={ss.url ?? "#"}>
                                         <span>{ss.title}</span>
                                       </a>
                                     </SidebarMenuSubButton>

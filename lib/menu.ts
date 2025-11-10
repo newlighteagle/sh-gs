@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react"
-import { BookOpen, PieChart } from "lucide-react"
+import { BookOpen, Building2, PieChart } from "lucide-react"
 import type { ModulePermission } from "@/lib/module"
 import { matchPermission, routeToModule } from "@/lib/module"
 
@@ -60,7 +60,61 @@ export const navMain: MenuItem[] = [
           { title: "Kampar", url: "/report/weekly/kampar" },
           { title: "Rokan Hulu", url: "/report/weekly/rokan-hulu" },
           { title: "Siak", url: "/report/weekly/siak" },
-          { title: "Pelalawan", url: "/report/weekly/pelalawan" },
+          { title: "Pelalawan", url: "/report/weekly/pelalawan" }
+        ],
+      },
+    ],
+  },
+  {
+    title: "ICS Profile",
+    icon: Building2,
+    items: [
+      {
+        title: "1404 - Pelalawan",
+        items: [{ title: "KUD Mulia", url: "/ics/pelalawan/mul" }],
+      },
+      {
+        title: "1405 - Siak",
+        items: [
+          { title: "KPM Karya Maju", url: "/ics/siak/kmj" },
+          { title: "APKASDU", url: "/ics/siak/dyn" },
+          { title: "APKSMB", url: "/ics/siak/smb" },
+          { title: "ASERMISAS", url: "/ics/siak/mis" },
+          { title: "APKSSB", url: "/ics/siak/ssb" },
+          { title: "APKASAIBER", url: "/ics/siak/sai" },
+          { title: "ASPEKSAB", url: "/ics/siak/sab" },
+          { title: "KP PKSJ", url: "/ics/siak/rap" },
+          { title: "KBJ", url: "/ics/siak/kbj" },
+          { title: "KSJ", url: "/ics/siak/ksj" },
+        ],
+      },
+      {
+        title: "1406 - Kampar",
+        items: [
+          { title: "APSS - Sei Galuh", url: "/ics/kampar/apss" },
+          { title: "KUD Karya Sembada", url: "/ics/kampar/ksm" },
+          { title: "KUD Hasrat Jaya Pagaruyung", url: "/ics/kampar/hjp" },
+          { title: "FORTASKI", url: "/ics/kampar/fk" },
+          { title: "FPS - Sei Garo", url: "/ics/kampar/sgo" },
+          { title: "KP Kusuma Bakti Mandiri", url: "/ics/kampar/kbm" },
+          { title: "Kopsa Tri Manunggal", url: "/ics/kampar/ktm" },
+          { title: "Teratai Sawit Lestari - Sungai Putih", url: "/ics/kampar/tsl" },
+          { title: "PPKS-Pangkalan Baru Sejahtera", url: "/ics/kampar/pbs" },
+          { title: "Hangtuah", url: "/ics/kampar/ht" },
+        ],
+      },
+      {
+        title: "1407 - Rokan Hulu",
+        items: [
+          { title: "KUD Tujuh Permata", url: "/ics/rohul/tjp" },
+          { title: "KUD Intan Makmur", url: "/ics/rohul/itm" },
+          { title: "KUD Sawit Sejahtera", url: "/ics/rohul/ssj" },
+          { title: "FPSS Semarak Mudo", url: "/ics/rohul/sm" },
+          { title: "PPKSS Tayo Barokah", url: "/ics/rohul/tbr" },
+          { title: "APKASA Rayon SKPE", url: "/ics/rohul/skpe" },
+          { title: "ASPEK RAS", url: "/ics/rohul/ras" },
+          { title: "ASPEK RSB", url: "/ics/rohul/rsb" },
+          { title: "ASPEK KRE", url: "/ics/rohul/kre" },
         ],
       },
     ],
