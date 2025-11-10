@@ -9,9 +9,12 @@ import {
   getFilteredRowModel,
   type ColumnFiltersState,
   type VisibilityState,
+  type ColumnSizingState,
+  type Cell,
   useReactTable,
 } from "@tanstack/react-table"
 
+import { cn } from "@/lib/utils"
 import {
   Table,
   TableBody,
@@ -43,10 +46,14 @@ interface DataTableProps<TData, TValue> {
     label?: string
     options: { label: string; value: string }[]
   }[]
+  enableColumnResize?: boolean
+  columnResizeMode?: "onChange" | "onEnd"
+  getCellProps?: (cell: Cell<TData, any>) => React.TdHTMLAttributes<HTMLTableCellElement> | undefined
+  enablePagination?: boolean
 }
 
-export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys, searchPlaceholder = "Search...", searchPlaceholders, enableColumnVisibility, defaultHiddenColumnIds, selectFilters }: DataTableProps<TData, TValue>) {
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
+export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys, searchPlaceholder = "Search...", searchPlaceholders, enableColumnVisibility, defaultHiddenColumnIds, selectFilters, enableColumnResize = false, columnResizeMode = "onChange", getCellProps, enablePagination = true }: DataTableProps<TData, TValue>) {
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: enablePagination ? 10 : data.length })
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(() => {
     const initial: VisibilityState = {}
@@ -55,19 +62,30 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
     })
     return initial
   })
+  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>({})
+  const [columnSizingInfo, setColumnSizingInfo] = React.useState({})
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { pagination, columnFilters, columnVisibility },
+    columnResizeMode,
+    state: { pagination, columnFilters, columnVisibility, columnSizing, columnSizingInfo },
     onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onColumnSizingChange: setColumnSizing,
+    onColumnSizingInfoChange: setColumnSizingInfo,
     // merge other states
     ...({} as any),
   })
+
+  React.useEffect(() => {
+    if (!enablePagination) {
+      setPagination((prev) => ({ pageIndex: 0, pageSize: data.length }))
+    }
+  }, [enablePagination, data.length])
 
   return (
     <div className="w-full">
@@ -131,10 +149,24 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className={cn(enableColumnResize && "relative")}
+                    style={enableColumnResize ? { width: header.getSize() } : undefined}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
+                    {enableColumnResize && header.column.getCanResize() && (
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={cn(
+                          "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none",
+                          header.column.getIsResizing() ? "bg-foreground/40" : "bg-transparent"
+                        )}
+                      />
+                    )}
                   </TableHead>
                 )
               })}
@@ -146,7 +178,11 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    style={enableColumnResize ? { width: cell.column.getSize() } : undefined}
+                    {...(getCellProps ? getCellProps(cell as any) : undefined)}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -161,27 +197,29 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end gap-2 py-2">
-        <div className="mr-auto text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
+      {enablePagination && (
+        <div className="flex items-center justify-end gap-2 py-2">
+          <div className="mr-auto text-sm text-muted-foreground">
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      )}
     </div>
   )
 }
