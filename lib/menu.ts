@@ -32,10 +32,9 @@ export const navMain: MenuItem[] = [
     title: "Dashboard",
     url: "/dashboard",
     icon: PieChart,
-    isActive: true,
     items: [
       { title: "Main", url: "/dashboard" },
-      { title: "KPI", url: "/dashboard/kpi" },
+      { title: "Impact", url: "/dashboard/impact" },
     ],
   },
   {

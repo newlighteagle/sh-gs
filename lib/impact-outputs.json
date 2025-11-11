@@ -1,0 +1,16 @@
+[
+  {
+    "id": "out-1",
+    "label": "Output: Capacity building delivered",
+    "type": "full",
+    "children": [
+      {
+        "id": "out-1.1",
+        "label": "# of trainings conducted",
+        "baseline": "0",
+        "intermediary": "10",
+        "msa": "20"
+      }
+    ]
+  }
+]
