@@ -50,13 +50,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <DropdownMenuTrigger asChild>
                   <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1.5">
                     <Avatar className="h-7 w-7">
-                      <AvatarImage src={session?.user?.image ?? ""} alt={session?.user?.name ?? "User"} />
+                      {session?.user?.image ? (
+                        <AvatarImage key={session.user.image} src={session.user.image} alt={session?.user?.name ?? "User"} />
+                      ) : null}
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{session?.user?.name ?? "User"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span>{session?.user?.name ?? "User"}</span>
+                      <span className="text-xs text-muted-foreground">{session?.user?.email ?? ""}</span>
+                      <span className="text-[10px] uppercase opacity-70">{((session?.user as any)?.role ?? "PUBLIC") as string}</span>
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
                     <LogOut />
@@ -67,7 +75,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             ) : (
               <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1.5">
                 <Avatar className="h-7 w-7">
-                  <AvatarImage src={session?.user?.image ?? ""} alt={session?.user?.name ?? "User"} />
+                  {session?.user?.image ? (
+                    <AvatarImage key={session.user.image} src={session.user.image} alt={session?.user?.name ?? "User"} />
+                  ) : null}
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </button>

@@ -76,11 +76,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const authUser = {
     name: session?.user?.name ?? data.user.name,
     email: session?.user?.email ?? data.user.email,
-    avatar: session?.user?.image ?? data.user.avatar,
+    avatar: typeof session?.user?.image === "string" ? session.user.image : "",
+    role: ((session as any)?.user?.role as string | undefined) ?? "PUBLIC",
   }
-  const userPerms = Array.isArray((session as any)?.user?.permissions)
-    ? ((session as any).user.permissions as string[])
-    : ["*"]
+  const userPerms = ["*"]
   const items = filterMenuByPermissions(navMain, userPerms)
 
   return (
