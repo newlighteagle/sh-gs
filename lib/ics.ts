@@ -31,7 +31,7 @@ export const ICS_COLUMNS: ICSColumnConfig[] = [
   { key: "ICSName", sheet: "ICSName", abbr: "ICS" },
   { key: "ICSAbrv", sheet: "ICSAbrv", abbr: "Abrv" },
   { key: "3FID", sheet: "3FID", abbr: "3FID" },
-  { key: "isKPI", sheet: "isKPI (1st SOW)", abbr: "KPI" },
+  { key: "isKPI", sheet: "isKPI (1st SOW)", abbr: "KPI", note: "1st SOW - Key Performance Indicator"  },
   { key: "RF_IT3", sheet: "Registered Farmer (RF) IT-3", abbr: "RF IT3", note: "Registered Farmer on IT3 Report" },
   { key: "RF_Actual", sheet: "RF-Actual in Database", abbr: "RF Actual", note: "Registered Farmer on Actual Input in Database" },
   { key: "RF_1st_SOW", sheet: "RF-1st SOW", abbr: "RF 1st SOW", note: "Targeted Registered Farmer on 1st SOW" },

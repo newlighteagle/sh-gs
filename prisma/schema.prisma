@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ImpactCategory {
+  OUTCOME
+  OUTPUT
+  ACTIVITY
+}
+
+model ImpactNode {
+  id           String          @id @default(cuid())
+  category     ImpactCategory
+  key          String
+  label        String
+  baseline     String?
+  intermediary String?
+  msa          String?
+  type         String?
+  lastChild    Boolean         @default(false)
+  order        Int             @default(0)
+
+  parentId String?
+  parent   ImpactNode?   @relation("ImpactNodeToChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children ImpactNode[]  @relation("ImpactNodeToChildren")
+
+  @@unique([category, key])
+  @@index([parentId, order])
+  @@index([category, parentId])
+}

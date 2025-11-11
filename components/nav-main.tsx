@@ -41,7 +41,8 @@ export function NavMain({ items }: { items: MenuItem[] }) {
             (sub.url && pathname.startsWith(sub.url)) ||
             (!!sub.items && sub.items.some((ss) => !!ss.url && pathname.startsWith(ss.url)))
           )
-          const shouldBeOpen = !!item.isActive || childMatches
+          const topActive = (item.url ? pathname.startsWith(item.url) : false) || childMatches
+          const shouldBeOpen = childMatches || topActive
 
           return (
             <Collapsible
@@ -52,7 +53,7 @@ export function NavMain({ items }: { items: MenuItem[] }) {
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton tooltip={item.title} isActive={topActive}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -63,9 +64,10 @@ export function NavMain({ items }: { items: MenuItem[] }) {
                     {item.items?.map((subItem) => {
                       const hasNested = Array.isArray(subItem.items) && subItem.items.length > 0
                       if (!hasNested) {
+                        const subActive = !!subItem.url && pathname === subItem.url
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild>
+                            <SidebarMenuSubButton asChild isActive={subActive}>
                               <a href={subItem.url ?? "#"}>
                                 <span>{subItem.title}</span>
                               </a>
@@ -75,6 +77,7 @@ export function NavMain({ items }: { items: MenuItem[] }) {
                       }
 
                       const subShouldBeOpen = !!subItem.items?.some((ss) => !!ss.url && pathname.startsWith(ss.url))
+                      const subHeaderActive = subShouldBeOpen || (!!subItem.url && pathname.startsWith(subItem.url ?? ""))
                       return (
                         <Collapsible
                           key={`${subItem.title}-${subShouldBeOpen ? "open" : "closed"}`}
@@ -84,7 +87,7 @@ export function NavMain({ items }: { items: MenuItem[] }) {
                         >
                           <SidebarMenuSubItem>
                             <CollapsibleTrigger asChild>
-                              <SidebarMenuSubButton asChild>
+                              <SidebarMenuSubButton asChild isActive={subHeaderActive}>
                                 <button type="button" className="flex w-full items-center gap-2">
                                   <span>{subItem.title}</span>
                                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -93,15 +96,18 @@ export function NavMain({ items }: { items: MenuItem[] }) {
                             </CollapsibleTrigger>
                             <CollapsibleContent>
                               <SidebarMenuSub>
-                                {subItem.items?.map((ss) => (
-                                  <SidebarMenuSubItem key={ss.title}>
-                                    <SidebarMenuSubButton asChild>
-                                      <a href={ss.url ?? "#"}>
-                                        <span>{ss.title}</span>
-                                      </a>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                ))}
+                                {subItem.items?.map((ss) => {
+                                  const leafActive = !!ss.url && pathname === ss.url
+                                  return (
+                                    <SidebarMenuSubItem key={ss.title}>
+                                      <SidebarMenuSubButton asChild isActive={leafActive}>
+                                        <a href={ss.url ?? "#"}>
+                                          <span>{ss.title}</span>
+                                        </a>
+                                      </SidebarMenuSubButton>
+                                    </SidebarMenuSubItem>
+                                  )
+                                })}
                               </SidebarMenuSub>
                             </CollapsibleContent>
                           </SidebarMenuSubItem>

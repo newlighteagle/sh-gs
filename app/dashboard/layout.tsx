@@ -1,8 +1,6 @@
-"use client"
-
 import type { ReactNode } from "react"
 import DashboardLayout from "@/components/dashboard-layout"
 
-export default function MasterLayout({ children }: { children: ReactNode }) {
+export default function DashboardRouteLayout({ children }: { children: ReactNode }) {
   return <DashboardLayout>{children}</DashboardLayout>
 }

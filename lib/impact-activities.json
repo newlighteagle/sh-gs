@@ -1,0 +1,16 @@
+[
+  {
+    "id": "act-1",
+    "label": "Activity: Field facilitation and monitoring",
+    "type": "full",
+    "children": [
+      {
+        "id": "act-1.1",
+        "label": "# of field visits conducted",
+        "baseline": "0",
+        "intermediary": "25",
+        "msa": "50"
+      }
+    ]
+  }
+]

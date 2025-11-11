@@ -1,0 +1,128 @@
+[
+  {
+    "id": "1.0.0.0",
+    "label": "I. Accelerated smallholder transformation process in the targeted districts from continous commitment of local goverment and stakeholders",
+    "type": "full",
+    "children": [
+      {
+        "id": "1.1.0.0",
+        "label": "Achieved effective sustainable smallholder program governance through commitment and support from the local government, private sector (supply chain actors), stakeholders, and the utilization of MIS",
+        "type": "full",
+        "children": [
+          {
+            "id": "1.1.1.0",
+            "label": "# of support (in the form of legal documents) provided by the stakeholders (government, UL Suppliers, companies, NGOs) as a result of better data governance",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "1.1.2.0",
+            "label": "# of smallholders receiving support from stakeholders (disaggregated based on type: loans, grants, etc)",
+            "lastChild": true,
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          }
+        ]
+      }
+    ]
+  },{
+    "id": "2.0.0.0",
+    "label": "II. Improved smallholder oil palm businesses",
+    "type": "full",
+    "children": [
+      {
+        "id": "2.1.0.0",
+        "label": "Improved organizational management of the smallholder group toward professional and productive organizations",
+        "type": "full",
+        "children": [
+          {
+            "id": "2.1.1.0",
+            "label": "[ # , % ] of smallholder groups that have access to financing (e.g. Loans, Grant)",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "2.1.2.0",
+            "label": "[ # , % ] of farmer groups have their own productive business units that support palm oil productivity",
+            "lastChild": true,
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "2.1.3.0",
+            "label": "% of Smallholders who received support that are satisfied with support relevance and effectiveness",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "2.1.4.0",
+            "label": "% farmer groups that increased level of maturity (refer to assessment dari busdev specialist)",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "2.1.5.0",
+            "label": "% increase in smallholder group income",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          }
+        ]
+      }
+    ]
+  },{
+    "id": "3.0.0.0",
+    "label": "III. Improved sustainable and traceable palm oil supply chain at district level",
+    "type": "full",
+    "children": [
+      {
+        "id": "3.1.0.0",
+        "label": "[ 1 ] Improved palm oil yield and quality through the consistent implementation of the Regenerative Agriculture Practices",
+        "type": "full",
+        "children": [
+          {
+            "id": "3.1.1.0",
+            "label": "% of farmer groups increased scores in knowledge assessment in trainings for sustainable agricultural practices and regenerative agriculture",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "3.1.2.0",
+            "label": "% farmer groups who implemented BMP, RA and SAP",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "3.1.3.0",
+            "label": "% of farmer groups that are SAP Assured",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },{
+            "id": "3.1.4.0",
+            "label": "% increase in smallholder palm oil productivity (annual basis) (target: 5-20% from its level in 2025)",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          },
+          {
+            "id": "3.1.5.0",
+            "label": "% increase in Income generated from credits on an annual basis",
+            "baseline": "xxx",
+            "intermediary": "xxx",
+            "msa": "xxx"
+          }
+        ]
+      }
+    ]
+  }
+
+]

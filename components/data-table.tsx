@@ -147,6 +147,9 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
               </label>
             )
           })}
+          {renderCustomFilters && (
+            <div className="flex items-center gap-2">{renderCustomFilters(table as any)}</div>
+          )}
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -168,9 +171,6 @@ export function DataTable<TData, TValue>({ columns, data, searchKey, searchKeys,
                   ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-          {renderCustomFilters && (
-            <div className="flex items-center gap-2">{renderCustomFilters(table as any)}</div>
           )}
         </div>
       )}
