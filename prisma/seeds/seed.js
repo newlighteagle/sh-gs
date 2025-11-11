@@ -1,11 +1,11 @@
-const { PrismaClient, ImpactCategory } = require("@prisma/client")
+const { PrismaClient, ImpactCategory, UserRole } = require("@prisma/client")
 const fs = require("fs")
 const path = require("path")
 
 const prisma = new PrismaClient()
 
 function readJson(relPath) {
-  const p = path.join(__dirname, "..", relPath)
+  const p = path.join(__dirname, "..", "..", relPath)
   const raw = fs.readFileSync(p, "utf8")
   return JSON.parse(raw)
 }
@@ -49,6 +49,21 @@ async function main() {
   await seedCategory(ImpactCategory.OUTCOME, outcomes)
   await seedCategory(ImpactCategory.OUTPUT, outputs)
   await seedCategory(ImpactCategory.ACTIVITY, activities)
+
+  // Seed AppUser roles (optional): ADMIN_EMAILS is a comma-separated list of admin emails
+  const adminEnv = process.env.ADMIN_EMAILS || ""
+  const adminEmails = adminEnv
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+
+  for (const email of adminEmails) {
+    await prisma.appUser.upsert({
+      where: { email },
+      update: { role: UserRole.ADMINISTRATOR },
+      create: { email, role: UserRole.ADMINISTRATOR },
+    })
+  }
 }
 
 main()

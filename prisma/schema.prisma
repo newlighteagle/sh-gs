@@ -33,3 +33,43 @@ model ImpactNode {
   @@index([parentId, order])
   @@index([category, parentId])
 }
+
+enum UserRole {
+  ADMINISTRATOR
+  USER
+  PUBLIC
+}
+
+model AppUser {
+  id          String    @id @default(cuid())
+  username    String?   
+  fullname    String?
+  email       String    @unique
+  role        UserRole  @default(USER)
+  group       String?
+  region      String?
+
+  @@index([email])
+  // Back relation
+  permissions UserPermission[]
+}
+
+enum PermissionDomain {
+  MENU
+  MODULE
+  DATA
+}
+
+model UserPermission {
+  id         String            @id @default(cuid())
+  userEmail  String
+  user       AppUser           @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+  domain     PermissionDomain
+  resource   String            // e.g. route path, module key, or data key; use "*" for wildcard
+  allow      Boolean           @default(true)
+  group      String?
+  region     String?
+
+  @@index([userEmail, domain])
+  @@unique([userEmail, domain, resource, group, region])
+}
