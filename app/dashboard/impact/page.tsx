@@ -99,65 +99,6 @@ function TreeTable({ data, category }: { data: TreeNode[]; category: 'OUTCOME' |
 
   const dash = '—';
 
-  const flattenAll = useCallback((nodes: TreeNode[], depth = 0, acc: FlattenedRow[] = []): FlattenedRow[] => {
-    for (const n of nodes) {
-      const hasChildren = !!(n.children && n.children.length);
-      acc.push({
-        id: n.id,
-        label: n.label,
-        depth,
-        hasChildren,
-        isExpanded: true,
-        parentId: null,
-        baseline: n.baseline,
-        intermediary: n.intermediary,
-        msa: n.msa,
-        type: n.type,
-        lastChild: n.lastChild,
-      });
-      if (hasChildren) flattenAll(n.children!, depth + 1, acc);
-    }
-    return acc;
-  }, []);
-
-  const exportExcel = () => {
-    const header = ['Indicator', 'Baseline', 'Intermediery', 'MSA'];
-    const all = flattenAll(model);
-    const body = all.map((r) => [
-      `${'  '.repeat(r.depth)}${r.label}`,
-      r.baseline ?? '',
-      r.intermediary ?? '',
-      r.msa ?? '',
-    ]);
-    const ws = XLSX.utils.aoa_to_sheet([header, ...body]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, category);
-    const ts = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `impact_${category.toLowerCase()}_${ts}.xlsx`);
-  };
-
-  const exportPdf = () => {
-    const header = ['Indicator', 'Baseline', 'Intermediery', 'MSA'];
-    const all = flattenAll(model);
-    const body = all.map((r) => [
-      `${'  '.repeat(r.depth)}${r.label}`,
-      r.baseline ?? '',
-      r.intermediary ?? '',
-      r.msa ?? '',
-    ]);
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
-    autoTable(doc, {
-      head: [header],
-      body,
-      styles: { fontSize: 9, cellPadding: 6 },
-      headStyles: { fillColor: [245, 245, 245], textColor: 40, halign: 'left' },
-      startY: 36,
-      margin: { left: 24, right: 24 },
-    });
-    const ts = new Date().toISOString().slice(0, 10);
-    doc.save(`impact_${category.toLowerCase()}_${ts}.pdf`);
-  };
-
   const updateNode = useCallback((nodes: TreeNode[], id: string, patch: Partial<TreeNode>): TreeNode[] => {
     return nodes.map((n) => {
       if (n.id === id) {
@@ -251,14 +192,6 @@ function TreeTable({ data, category }: { data: TreeNode[]; category: 'OUTCOME' |
 
   return (
     <>
-      <div className="flex items-center justify-end gap-2 pb-2">
-        <Button variant="outline" size="sm" onClick={exportExcel} title="Download as Excel">
-          <FileSpreadsheet className="h-4 w-4 mr-2" /> Excel
-        </Button>
-        <Button variant="outline" size="sm" onClick={exportPdf} title="Download as PDF">
-          <FileText className="h-4 w-4 mr-2" /> PDF
-        </Button>
-      </div>
       <div className="w-full overflow-x-auto rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-black">
         <table className="min-w-full table-fixed border-collapse" role="treegrid" aria-label="Smallholder HUB - Impact">
           <colgroup>
@@ -379,6 +312,7 @@ export default function Page() {
   const [output, setOutput] = useState<TreeNode[] | null>(null);
   const [activity, setActivity] = useState<TreeNode[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<'outcome' | 'output' | 'activity'>('outcome');
 
   useEffect(() => {
     let ignore = false;
@@ -414,21 +348,95 @@ export default function Page() {
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit aperiam neque sequi? Nulla recusandae quod ratione amet a rerum deserunt exercitationem beatae rem aut natus temporibus assumenda necessitatibus voluptas iusto cumque minus qui nemo, harum adipisci! Architecto, veritatis eligendi! Eum quia sapiente, incidunt reprehenderit deserunt iure, ipsam rerum quas molestiae harum dolore consequuntur illo, quidem tenetur aliquid praesentium officia? Laboriosam corporis ratione soluta, dolorum id modi vel aperiam accusantium et natus delectus, velit tenetur saepe non placeat qui error veritatis in facilis unde? Delectus culpa enim impedit fugit inventore repudiandae ut nihil reiciendis quia, modi consectetur praesentium eaque voluptatem beatae!
         </p>
       </div>
-      <Tabs defaultValue="outcome">
-        <TabsList>
-          <TabsTrigger value="outcome">
-            <Target />
-            Outcome
-          </TabsTrigger>
-          <TabsTrigger value="output">
-            <ListChecks />
-            Output
-          </TabsTrigger>
-          <TabsTrigger value="activity">
-            <Activity />
-            Activity
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <TabsList>
+            <TabsTrigger value="outcome">
+              <Target />
+              Outcome
+            </TabsTrigger>
+            <TabsTrigger value="output">
+              <ListChecks />
+              Output
+            </TabsTrigger>
+            <TabsTrigger value="activity">
+              <Activity />
+              Activity
+            </TabsTrigger>
+          </TabsList>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const data = tab === 'outcome' ? outcome : tab === 'output' ? output : activity;
+                const category = tab === 'outcome' ? 'OUTCOME' : tab === 'output' ? 'OUTPUT' : 'ACTIVITY';
+                const flattenAll = (nodes: TreeNode[], depth = 0, acc: Array<{ label: string; baseline?: string; intermediary?: string; msa?: string }> = []) => {
+                  for (const n of nodes) {
+                    const hasChildren = !!(n.children && n.children.length);
+                    acc.push({
+                      label: `${'  '.repeat(depth)}${n.label}`,
+                      baseline: n.baseline,
+                      intermediary: n.intermediary,
+                      msa: n.msa,
+                    });
+                    if (hasChildren) flattenAll(n.children!, depth + 1, acc);
+                  }
+                  return acc;
+                };
+                const rows = flattenAll(data ?? []);
+                const header = ['Indicator', 'Baseline', 'Intermediery', 'MSA'];
+                const body = rows.map((r) => [r.label, r.baseline ?? '', r.intermediary ?? '', r.msa ?? '']);
+                const ws = XLSX.utils.aoa_to_sheet([header, ...body]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, category);
+                const ts = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(wb, `impact_${category.toLowerCase()}_${ts}.xlsx`);
+              }}
+              title="Download as Excel"
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" /> Excel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const data = tab === 'outcome' ? outcome : tab === 'output' ? output : activity;
+                const category = tab === 'outcome' ? 'OUTCOME' : tab === 'output' ? 'OUTPUT' : 'ACTIVITY';
+                const flattenAll = (nodes: TreeNode[], depth = 0, acc: Array<{ label: string; baseline?: string; intermediary?: string; msa?: string }> = []) => {
+                  for (const n of nodes) {
+                    const hasChildren = !!(n.children && n.children.length);
+                    acc.push({
+                      label: `${'  '.repeat(depth)}${n.label}`,
+                      baseline: n.baseline,
+                      intermediary: n.intermediary,
+                      msa: n.msa,
+                    });
+                    if (hasChildren) flattenAll(n.children!, depth + 1, acc);
+                  }
+                  return acc;
+                };
+                const rows = flattenAll(data ?? []);
+                const header = ['Indicator', 'Baseline', 'Intermediery', 'MSA'];
+                const body = rows.map((r) => [r.label, r.baseline ?? '', r.intermediary ?? '', r.msa ?? '']);
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+                autoTable(doc, {
+                  head: [header],
+                  body,
+                  styles: { fontSize: 9, cellPadding: 6 },
+                  headStyles: { fillColor: [245, 245, 245], textColor: 40, halign: 'left' },
+                  startY: 36,
+                  margin: { left: 24, right: 24 },
+                });
+                const ts = new Date().toISOString().slice(0, 10);
+                doc.save(`impact_${category.toLowerCase()}_${ts}.pdf`);
+              }}
+              title="Download as PDF"
+            >
+              <FileText className="h-4 w-4 mr-2" /> PDF
+            </Button>
+          </div>
+        </div>
         <TabsContent value="outcome">
           {loading && !outcome ? (
             <div className="rounded-md border p-4 text-sm text-zinc-600 dark:text-zinc-400">Loading...</div>
