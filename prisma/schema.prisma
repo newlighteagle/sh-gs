@@ -36,6 +36,7 @@ model ImpactNode {
 
 enum UserRole {
   ADMINISTRATOR
+  OPERATOR
   USER
   PUBLIC
 }
