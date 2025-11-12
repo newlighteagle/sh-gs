@@ -1,10 +1,11 @@
 import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [
@@ -59,6 +60,8 @@ const handler = NextAuth({
       return session;
     },
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
