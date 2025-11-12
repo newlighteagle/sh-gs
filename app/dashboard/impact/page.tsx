@@ -286,11 +286,12 @@ function TreeTable({ data, category }: { data: TreeNode[]; category: 'OUTCOME' |
           <tbody>
             {rows.map((row) => {
               const isFull = row.type === 'full';
+              const isKeyRoot = /^\d+\.0\.0\.0$/.test(row.id);
               const labelEl = (
                 <div
                   className={`flex items-center gap-2 rounded-md px-2 py-1 ${
                     isFull ? 'font-semibold' : row.hasChildren ? 'font-medium' : 'font-normal'
-                  } text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/40`}
+                  } text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/40 ${isKeyRoot ? '!bg-yellow-50 dark:!bg-yellow-900/30 uppercase' : ''}`}
                   style={{ paddingLeft: row.depth * 16 }}
                 >
                   {row.hasChildren ? (
@@ -320,7 +321,7 @@ function TreeTable({ data, category }: { data: TreeNode[]; category: 'OUTCOME' |
                   key={row.id}
                   className={`border-t border-zinc-200 dark:border-zinc-800 ${
                     isFull ? 'bg-zinc-50 dark:bg-zinc-900/40' : row.hasChildren ? 'bg-zinc-50/30 dark:bg-zinc-900/20' : ''
-                  }`}
+                  } ${isKeyRoot ? '!bg-yellow-50 dark:!bg-yellow-900/20 uppercase' : ''}`}
                   role="row"
                   aria-level={row.depth + 1}
                 >

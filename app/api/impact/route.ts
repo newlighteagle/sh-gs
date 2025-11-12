@@ -11,9 +11,9 @@ export async function GET(req: Request) {
   }
   const records = await prisma.impactNode.findMany({
     where: { category: categoryParam as any },
-    orderBy: { order: "asc" },
+    orderBy: { key: "asc" },
   })
-  const childrenOf = new Map<string | null, Array<{ dbId: string; order: number }>>()
+  const childrenOf = new Map<string | null, Array<{ dbId: string; key: string }>>()
   const nodeByDbId = new Map<string, any>()
   for (const r of records) {
     nodeByDbId.set(r.id, {
@@ -28,11 +28,11 @@ export async function GET(req: Request) {
     })
     const k = r.parentId ?? null
     const arr = childrenOf.get(k) ?? []
-    arr.push({ dbId: r.id, order: r.order })
+    arr.push({ dbId: r.id, key: r.key })
     childrenOf.set(k, arr)
   }
-  function build(list: Array<{ dbId: string; order: number }>): any[] {
-    list.sort((a, b) => a.order - b.order)
+  function build(list: Array<{ dbId: string; key: string }>): any[] {
+    list.sort((a, b) => a.key.localeCompare(b.key, undefined, { numeric: true, sensitivity: "base" }))
     const out: any[] = []
     for (const it of list) {
       const n = nodeByDbId.get(it.dbId)
